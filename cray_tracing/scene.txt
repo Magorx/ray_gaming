@@ -1,0 +1,13 @@
+width 50 height 50
+screen_distance 100
+resolution_coef 0.75
+
+depth 5
+
+cam_pos (50, 0, 0)
+cam_dir (1, 0, 0)
+
+Light point (50, -50, -10) (1, 1, 1) 1700000
+
+Primitive Sphere (160, 0, 0) 20 ((0.45, 0.75, 1) 0 0 0 0 0 (0, 0, 0) 0)
+Model out.txt (150, 0, 0) 5.5 ((0.2, 0.8, 0.2) 0 0 0 0 0 (0, 0, 0) 0)
