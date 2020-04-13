@@ -40,7 +40,7 @@ int main() {
 
     int mx = w / 2;
     int my = h / 2;
-    double sense = 0.25;
+    double sense = 0.1;
     sf::Mouse::setPosition(sf::Vector2i(mx, my), window);
 
     double pi = 3.1415926535;
