@@ -2,6 +2,7 @@
 *.tlog
 *.lastbuildstate
 *.vcxproj*
+download_and_try/
 
 
 *.rsuser
