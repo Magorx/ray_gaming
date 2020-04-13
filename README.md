@@ -4,4 +4,4 @@ Moving - wasd + mouse
 
 Up - q
 
-down - e
+Вown - e
