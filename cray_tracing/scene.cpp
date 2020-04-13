@@ -13,6 +13,7 @@ Scene::Scene(std::string filename) {
     fs >> s >> screen_distance;
     double resolution_coef;
     fs >> s >> resolution_coef;
+    fs >> s >> pixel_size;
 
     fs >> s >> depth;
 

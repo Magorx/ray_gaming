@@ -15,6 +15,7 @@ struct Scene {
     std::vector<Light> lights;
     Camera camera;
     int depth;
+    int pixel_size;
 
     Scene();
     Scene(std::string filename);

@@ -1,6 +1,7 @@
 width 50 height 50
 screen_distance 100
 resolution_coef 0.75
+pixel_coef 10
 
 depth 5
 

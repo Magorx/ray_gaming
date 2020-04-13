@@ -26,7 +26,7 @@ int main() {
     auto image = scene.render();
     save_image(image, "image.ppm");
 
-    int rect_size = 30;
+    int rect_size = scene.pixel_size;
     auto rects = image_to_rects(image, rect_size);
 
     int w = rects.size() * rect_size;
