@@ -145,3 +145,33 @@ Vector rotate(const Vector vec, double dx, double dy, double dz) {
 Vector rotate(const Vector vec, const Vector rotation) {
     return rotz(roty(rotx(vec, rotation.x), rotation.y), rotation.z);
 }
+
+Line::Line() {
+    p = {0, 0, 0};
+    d = {0, 0, 0};
+}
+
+Line::Line(const Vector &p1, const Vector &p2) {
+    p = p1;
+    d = (p2 - p1).normal();
+}
+
+Vector Line::point_projection(const Vector &point) {
+    double t = (point - p).dot(d) / d.len();
+    return p + d * t;
+}
+
+Vector Line::clamped_point_projection(const Vector &p2, const Vector &point) {
+    Vector proj = point_projection(point);
+    Vector p2_p = proj - p2;
+    Vector p1_p = proj - p;
+    if (p2_p.dot(p1_p) > eps) {
+        if (p2_p.len() < p1_p.len()) {
+            return p2;
+        } else {
+            return p;
+        }
+    } else {
+        return proj;
+    }
+}

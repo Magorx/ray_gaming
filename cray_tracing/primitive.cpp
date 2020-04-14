@@ -47,6 +47,25 @@ Intersection Sphere::intersect(Ray &ray) {
     return {point, d, this->normal(point), this};
 }
 
+Vector Sphere::intersects(Primitive *prim) {
+    if (prim->type == SPHERE) {
+        Sphere* sphere = dynamic_cast<Sphere*>(prim);
+        double centers_distant = (sphere->c - c).len();
+        if (centers_distant - (sphere->r + r) < eps && (centers_distant - abs(sphere->r - r) > eps)) {
+            return (c - sphere->c).normal();
+        }
+    } else if (prim->type == POLYGON) {
+        Triangle* triag = dynamic_cast<Triangle*>(prim);
+        Vector p = triag->get_nearest_point(c);
+        if ((p - c).len() - r < eps) {
+            if ((triag->p1 - c).len() - r > eps || (triag->p1 - c).len() - r > eps || (triag->p1 - c).len() - r > eps) {
+                return (c - p).normal();
+            }
+        }
+    }
+    return {0, 0, 0};
+}
+
 Plane::Plane() {}
 
 Plane::Plane(const Vector point, const Vector normal, const Properties &properties) {
@@ -65,6 +84,12 @@ Intersection Plane::intersect(Ray &ray) {
 
     Vector point = ray.cast(d);
     return {point, d, n, this};
+}
+
+Vector Plane::point_projection(const Vector& point) {
+    Vector point_p = p - point;
+    double t = n.dot(point_p) / n.len();
+    return p + n.normal() * t;
 }
 
 Triangle::Triangle() {}
@@ -102,6 +127,33 @@ Intersection Triangle::intersect(Ray &ray) {
         inter.obj = this;
         return inter;
     }
+}
+
+Vector Triangle::get_nearest_point(const Vector &p) {
+    Vector proj = pl.point_projection(p);
+    if (is_point_inside(proj)) {
+        return proj;
+    }
+
+    Vector proj_12 = Line(p1, p2).clamped_point_projection(p2, p);
+    Vector proj_23 = Line(p2, p3).clamped_point_projection(p3, p);
+    Vector proj_31 = Line(p3, p1).clamped_point_projection(p1, p);
+
+    Vector proj_p_1 = p - proj_12;
+    Vector proj_p_2 = p - proj_23;
+    Vector proj_p_3 = p - proj_31;
+
+    double min_dist = proj_p_1.len();
+    Vector ret = proj_12;
+    if (proj_p_2.len() < min_dist) {
+        min_dist = proj_p_2.len();
+        ret = proj_23;
+    }
+    if (proj_p_3.len() < min_dist) {
+        min_dist = proj_p_3.len();
+        ret = proj_31;
+    }
+    return ret;
 }
 
 std::istream& operator>>(std::istream& input_stream, Primitive* &prim) {

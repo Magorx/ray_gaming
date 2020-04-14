@@ -24,7 +24,6 @@ int main() {
     Scene scene(filename);
 
     auto image = scene.render();
-    save_image(image, "image.ppm");
 
     int rect_size = scene.pixel_size;
     auto rects = image_to_rects(image, rect_size);
@@ -45,6 +44,8 @@ int main() {
 
     double pi = 3.1415926535;
 
+    Vector prev_c = scene.player.c;
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -53,26 +54,59 @@ int main() {
         }
         window.clear(sf::Color::Black);
 
-        cout << scene.camera.o << " | " << scene.camera.d << endl;
+        int xxx, yyy, zzz, ddd;
+        xxx = scene.camera.o.x;
+        yyy = scene.camera.o.y;
+        zzz = scene.camera.o.z;
+        ddd = scene.camera.dist;
 
+        cout << xxx << " " << yyy << " " << zzz << " | " << ddd << endl;
+
+        Vector shift;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            scene.camera.o += scene.camera.d;
+            shift += scene.camera.d;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            scene.camera.o += scene.camera.d * -1;
+            shift += scene.camera.d * -1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            scene.camera.o += scene.camera.ort1;
+            shift += scene.camera.ort1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            scene.camera.o += scene.camera.ort1 * -1;
+            shift += scene.camera.ort1 * -1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-            scene.camera.o += Vector(0, 0, 1);
+            shift += Vector(0, 0, 1);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-            scene.camera.o += Vector(0, 0, -1);
+            shift += Vector(0, 0, -1);
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+            scene.camera.dist -= 1;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+            scene.camera.dist += 1;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
+            scene.camera.dist = 100;
+        }
+        scene.player.c += shift;
+        Vector shifted = shift;
+
+        for (auto obj : scene.objs) {
+            Vector inter_norm = scene.player.intersects(obj);
+            if (inter_norm.len()) {
+                cout << "BAM\n";
+                scene.player.c += inter_norm.normal();
+                continue;
+                shift *= -1;
+                double t = shift.dot(inter_norm) / inter_norm.len();
+                shift = inter_norm.normal() * t;
+            }
+        }
+
+        //scene.player.c += shift;
+        scene.camera.o = scene.player.c;
 
         sf::Vector2i mxy = sf::Mouse::getPosition(window);
         int cur_mx = mxy.x;

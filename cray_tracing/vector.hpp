@@ -44,4 +44,14 @@ Vector rotate(const Vector vec, double dx, double dy, double dz);
 Vector rotate(const Vector vec, const Vector rotation);
 
 
+struct Line {
+    Vector p;
+    Vector d;
+    Line();
+    Line(const Vector &p1, const Vector &p2);
+    Vector point_projection(const Vector &point);
+    Vector clamped_point_projection(const Vector &p2, const Vector &point);
+};
+
+
 #endif // VECTOR

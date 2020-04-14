@@ -1,12 +1,13 @@
 width 50 height 50
 screen_distance 100
-resolution_coef 0.75
-pixel_coef 10
+resolution_coef 1
+pixel_coef 15
 
 depth 5
 
 cam_pos (50, 0, 0)
 cam_dir (1, 0, 0)
+player (50, 0, 0) 10 ((0.45, 0.75, 1) 0 0 0 0 0 (0, 0, 0) 0)
 
 Light point (50, -50, -10) (1, 1, 1) 1700000
 

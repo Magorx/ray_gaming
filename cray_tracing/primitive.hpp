@@ -32,6 +32,7 @@ struct Sphere : Primitive {
 
     Vector normal(const Vector &point);
     Intersection intersect(Ray &ray);
+    Vector intersects(Primitive *prim);
 };
 
 struct Plane : Primitive {
@@ -42,6 +43,7 @@ struct Plane : Primitive {
     Plane(const Vector point, const Vector normal, const Properties &properties);
 
     Intersection intersect(Ray &ray);
+    Vector point_projection(const Vector &point);
 };
 
 struct Triangle : Primitive {
@@ -57,6 +59,7 @@ struct Triangle : Primitive {
 
     bool is_point_inside(const Vector &p);
     Intersection intersect(Ray &ray);
+    Vector get_nearest_point(const Vector &p);
 };
 
 std::istream& operator>>(std::istream& input_stream, Primitive* &prim);

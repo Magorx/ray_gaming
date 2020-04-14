@@ -22,6 +22,7 @@ Scene::Scene(std::string filename) {
     Vector cam_dir;
     fs >> s >> cam_dir;
     camera = Camera(cam_pos, cam_dir, screen_distance, width, height, resolution_coef);
+    fs >> s >> player;
 
     std::string type;
     while (fs >> type) {
