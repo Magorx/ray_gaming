@@ -56,6 +56,13 @@ Vector operator-(const Vector &first, const Vector &second) {
     return {first.x - second.x, first.y - second.y, first.z - second.z};
 }
 
+Vector operator-=(Vector& first, const Vector& second) {
+    first.x -= second.x;
+    first.y -= second.y;
+    first.z -= second.z;
+    return first;
+}
+
 Vector operator*(const Vector &first, const Vector &second) {
     return {first.x * second.x, first.y * second.y, first.z * second.z};
 }

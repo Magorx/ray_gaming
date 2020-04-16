@@ -33,6 +33,7 @@ struct Sphere : Primitive {
     Vector normal(const Vector &point);
     Intersection intersect(Ray &ray);
     Vector intersects(Primitive *prim);
+    double dist(Primitive *prim) const;
 };
 
 struct Plane : Primitive {

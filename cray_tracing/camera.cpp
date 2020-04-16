@@ -26,7 +26,7 @@ void Camera::update() {
     d = d.normal();
     //ort1 = Vector(-d.y, d.x, d.z).normal();
     double pi = 3.1415926535;
-    Vector a(0, 0, 1);
+    Vector a(0, 0, -1);
     ort1 = a.cross(d).normal();
     ort2 = ort1.cross(d).normal();
     left_upper = o + d * dist + ort1 * w * 0.5 + ort2 * h * 0.5;

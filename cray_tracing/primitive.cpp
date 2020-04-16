@@ -52,18 +52,45 @@ Vector Sphere::intersects(Primitive *prim) {
         Sphere* sphere = dynamic_cast<Sphere*>(prim);
         double centers_distant = (sphere->c - c).len();
         if (centers_distant - (sphere->r + r) < eps && (centers_distant - abs(sphere->r - r) > eps)) {
-            return (c - sphere->c).normal();
+            return (c - sphere->c).normal() * (-1) * dist(sphere);
         }
     } else if (prim->type == POLYGON) {
         Triangle* triag = dynamic_cast<Triangle*>(prim);
         Vector p = triag->get_nearest_point(c);
         if ((p - c).len() - r < eps) {
             if ((triag->p1 - c).len() - r > eps || (triag->p1 - c).len() - r > eps || (triag->p1 - c).len() - r > eps) {
-                return (c - p).normal();
+                Vector proj = triag->pl.point_projection(c);
+                Vector proj_c = c - proj;
+                return proj_c.normal() * (r - proj_c.len());
             }
+        }
+    } else if (prim->type == PLANE) {
+        Plane* pl = dynamic_cast<Plane*>(prim);
+        Vector proj = pl->point_projection(c);
+        Vector proj_c = c - proj;
+        if (proj_c.len() - r < eps) {
+            return proj_c.normal() * (r - proj_c.len());
         }
     }
     return {0, 0, 0};
+}
+
+double Sphere::dist(Primitive* prim) const {
+    if (prim->type == SPHERE) {
+        Sphere* sphere = dynamic_cast<Sphere*>(prim);
+        return (sphere->c - c).len() - (sphere->r + r);
+    }
+    else if (prim->type == POLYGON) {
+        Triangle* triag = dynamic_cast<Triangle*>(prim);
+        Vector p = triag->get_nearest_point(c);
+        return (p - c).len() - r;
+    }
+    else if (prim->type == PLANE) {
+        Plane* pl = dynamic_cast<Plane*>(prim);
+        Vector proj = pl->point_projection(c);
+        return (proj - c).len() - r;
+    }
+    return INFINITY;
 }
 
 Plane::Plane() {}
@@ -87,9 +114,9 @@ Intersection Plane::intersect(Ray &ray) {
 }
 
 Vector Plane::point_projection(const Vector& point) {
-    Vector point_p = p - point;
-    double t = n.dot(point_p) / n.len();
-    return p + n.normal() * t;
+    Vector p_point = point - p;
+    double t = n.dot(p_point) / n.len();
+    return point - n.normal() * t;
 }
 
 Triangle::Triangle() {}

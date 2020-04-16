@@ -20,6 +20,7 @@ std::istream& operator>>(std::istream& input_stream,  Properties &prop) {
     Vector color, rotation;
     double reflective, refractive, refractive_coef, type, scale, constant_color;
     input_stream >> color >> reflective >> refractive >> refractive_coef >> type >> scale >> rotation >> constant_color;
+    input_stream >> bracket;
     prop = Properties(color, reflective, refractive, refractive_coef, type, scale, rotation, constant_color);
 
     return input_stream;

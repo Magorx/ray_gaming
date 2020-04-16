@@ -22,6 +22,9 @@ std::vector<std::vector<sf::RectangleShape>> image_to_rects(std::vector<std::vec
 int main() {
     std::string filename = "scene.txt";
     Scene scene(filename);
+    if (scene.to_display_player) {
+        scene.objs.push_back(&scene.player);
+    }
 
     auto image = scene.render();
 
@@ -41,10 +44,11 @@ int main() {
     int my = h / 2;
     double sense = 0.1;
     sf::Mouse::setPosition(sf::Vector2i(mx, my), window);
+    Vector offset(0, 0, 0);
 
     double pi = 3.1415926535;
-
-    Vector prev_c = scene.player.c;
+    double speed = 1;
+    Vector gravity = {0, 0, -speed * 0.35};
 
     while (window.isOpen()) {
         sf::Event event;
@@ -55,9 +59,9 @@ int main() {
         window.clear(sf::Color::Black);
 
         int xxx, yyy, zzz, ddd;
-        xxx = scene.camera.o.x;
-        yyy = scene.camera.o.y;
-        zzz = scene.camera.o.z;
+        xxx = scene.player.c.x;
+        yyy = scene.player.c.y;
+        zzz = scene.player.c.z;
         ddd = scene.camera.dist;
 
         cout << xxx << " " << yyy << " " << zzz << " | " << ddd << endl;
@@ -75,12 +79,6 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             shift += scene.camera.ort1 * -1;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-            shift += Vector(0, 0, 1);
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-            shift += Vector(0, 0, -1);
-        }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
             scene.camera.dist -= 1;
         }
@@ -90,35 +88,50 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
             scene.camera.dist = 100;
         }
+        shift.z = 0;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+            shift += Vector(0, 0, 1.5);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+            shift += Vector(0, 0, -1.5);
+        }
+        shift = shift.normal() * speed;
+        Vector init = scene.player.c;
+        shift += gravity;
         scene.player.c += shift;
         Vector shifted = shift;
+
+        std::sort(scene.objs.begin(), scene.objs.end(),
+            [scene](Primitive *a, Primitive *b) {
+                return scene.player.dist(a) < scene.player.dist(b);
+            });
 
         for (auto obj : scene.objs) {
             Vector inter_norm = scene.player.intersects(obj);
             if (inter_norm.len()) {
-                cout << "BAM\n";
-                scene.player.c += inter_norm.normal();
-                continue;
-                shift *= -1;
+                //cout << "bam " << scene.player.c << '\n' ;
                 double t = shift.dot(inter_norm) / inter_norm.len();
-                shift = inter_norm.normal() * t;
+                //shift -= inter_norm.normal() * t;
+                //scene.player.c -= shifted;
+                //scene.player.c += shift;
+                //shifted = shift;
+                scene.player.c += inter_norm;
             }
         }
 
-        //scene.player.c += shift;
-        scene.camera.o = scene.player.c;
+        scene.camera.o = scene.player.c + scene.camera_offset;
+
+        // ROTATING
 
         sf::Vector2i mxy = sf::Mouse::getPosition(window);
         int cur_mx = mxy.x;
         int cur_my = mxy.y;
-        double dx = cur_mx - mx;
-        double dy = cur_my - my;
+        int cur_dx = cur_mx - mx;
+        int cur_dy = cur_my - my;
         sf::Mouse::setPosition(sf::Vector2i(mx, my), window);
-        //mx = cur_mx;
-        //my = cur_my;
 
-        dx *= sense;
-        dy *= sense;
+        double dx = cur_dx * sense;
+        double dy = cur_dy * sense;
 
         double cx = scene.camera.d.x;
         double cy = scene.camera.d.y;
@@ -126,12 +139,13 @@ int main() {
         double cyy = cy / (cy * cy + cx * cx);
         double cxx = cx / (cy * cy + cx * cx);
 
-        scene.camera.d = rotz(scene.camera.d, -pi * dx / 130);
-        scene.camera.d = roty(scene.camera.d, -pi * dy * cxx / 130);
-        scene.camera.d = rotx(scene.camera.d, +pi * dy * cyy / 130);
-
+        scene.camera.d = rotz(scene.camera.d, +pi * dx / 130);
+        scene.camera.d = roty(scene.camera.d, +pi * dy * cxx / 130);
+        scene.camera.d = rotx(scene.camera.d, -pi * dy * cyy / 130);
 
         scene.camera.update();
+
+        // DRAWING
 
         image = scene.render();
         rects = image_to_rects(image, rect_size);

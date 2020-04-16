@@ -17,6 +17,8 @@ struct Scene {
     int depth;
     int pixel_size;
     Sphere player;
+    int to_display_player;
+    Vector camera_offset;
 
     Scene();
     Scene(std::string filename);

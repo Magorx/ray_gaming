@@ -23,6 +23,7 @@ struct Vector {
 Vector operator+(const Vector &first, const Vector &second);
 Vector operator+=(Vector &first, const Vector &second);
 Vector operator-(const Vector &first, const Vector &second);
+Vector operator-=(Vector& first, const Vector& second);
 Vector operator*(const Vector &first, const Vector &second);
 Vector operator*=(Vector &first, const Vector &second);
 Vector operator*(const Vector &first, const double k);
